@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('Towers & Telemetry')}"></head>
+<body>
+    <aside th:replace="~{fragments/layout :: sidebar('towers')}"></aside>
+
+    <main class="app-main">
+        <header th:replace="~{fragments/layout :: topbar('Aeroponic Tower Infrastructure & Telemetry')}"></header>
+
+        <div class="content-container">
+            <div th:if="${successMessage}" class="alert alert-success" style="display:block;" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="alert alert-danger" style="display:block;" th:text="${errorMessage}"></div>
+
+            <!-- Add Tower & Record Telemetry Side by Side -->
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
+                <!-- Add Tower Panel -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <span>Register New Tower</span>
+                    </div>
+                    <form th:action="@{/towers}" th:object="${newTower}" method="post">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Zone / Tower Name *</label>
+                                <input type="text" class="form-control" th:field="*{zoneName}" placeholder="e.g. Aeroponic Module 4" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Plant Capacity (Holes) *</label>
+                                <input type="number" min="1" class="form-control" th:field="*{capacity}" placeholder="150" required />
+                            </div>
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <label>LED Spectrum</label>
+                                <input type="text" class="form-control" th:field="*{ledSpectrum}" placeholder="e.g. Full Spectrum White / 660nm Deep Red" />
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Tower</button>
+                    </form>
+                </div>
+
+                <!-- Record Telemetry Panel -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <span>Record Sensor Telemetry</span>
+                    </div>
+                    <form th:action="@{/towers/telemetry}" th:object="${telemetryDto}" method="post">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Target Tower *</label>
+                                <select class="form-control" th:field="*{towerId}" required>
+                                    <option th:each="tw : ${towers}" th:value="${tw.id}" th:text="'#TWR-' + ${tw.id} + ' (' + ${tw.zoneName} + ')'"></option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Humidity (%) *</label>
+                                <input type="number" step="0.1" min="0" max="100" class="form-control" th:field="*{humidity}" placeholder="65.0" required />
+                            </div>
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <label>Nutrient Concentration (PPM) *</label>
+                                <input type="number" step="1" min="0" class="form-control" th:field="*{nutrientPpm}" placeholder="950" required />
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Log Telemetry</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Towers List Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Registered Towers (<span th:text="${#lists.size(towers)}">0</span>)</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Tower ID</th>
+                                <th>Zone Name</th>
+                                <th class="col-num">Capacity</th>
+                                <th>LED Spectrum</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(towers)}">
+                                <td colspan="5" style="color:var(--color-text-muted);font-style:italic;">No towers configured yet.</td>
+                            </tr>
+                            <tr th:each="t : ${towers}">
+                                <td class="mono" th:text="'#TWR-' + ${t.id}">#TWR-1</td>
+                                <td style="font-weight:600;" th:text="${t.zoneName}">Module 1</td>
+                                <td class="mono col-num" th:text="${t.capacity} + ' plants'">150 plants</td>
+                                <td th:text="${t.ledSpectrum != null and !t.ledSpectrum.isEmpty()} ? ${t.ledSpectrum} : 'Standard'">Standard</td>
+                                <td>
+                                    <form th:action="@{'/towers/' + ${t.id} + '/delete'}" method="post" style="display:inline;" onsubmit="return confirm('Delete this tower and its history?');">
+                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Recent Telemetry Log -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Telemetry Readings Log</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Log ID</th>
+                                <th>Tower</th>
+                                <th class="col-num">Humidity (%)</th>
+                                <th class="col-num">Nutrient PPM</th>
+                                <th>Timestamp</th>
+                                <th>Auto-Mist Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(telemetryList)}">
+                                <td colspan="6" style="color:var(--color-text-muted);font-style:italic;">No sensor readings logged.</td>
+                            </tr>
+                            <tr th:each="tl : ${telemetryList}">
+                                <td class="mono" th:text="'#TLM-' + ${tl.id}">#1</td>
+                                <td th:text="${tl.tower != null ? tl.tower.zoneName : '-'}">Tower 1</td>
+                                <td class="mono col-num" th:text="${#numbers.formatDecimal(tl.humidity, 1, 1)} + '%'">65.0%</td>
+                                <td class="mono col-num" th:text="${#numbers.formatDecimal(tl.nutrientPpm, 1, 0)} + ' PPM'">950 PPM</td>
+                                <td class="mono" th:text="${#temporals.format(tl.recordedAt, 'dd MMM yyyy, HH:mm:ss')}">27 Sep, 01:00</td>
+                                <td>
+                                    <span th:if="${tl.mistTriggered}" class="badge badge-warning">AUTO-MIST TRIGGERED</span>
+                                    <span th:unless="${tl.mistTriggered}" class="badge badge-success">NORMAL</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

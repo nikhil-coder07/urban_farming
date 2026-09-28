@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchases - AeroFarm ERP</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <aside class="app-sidebar">
+        <div class="brand-header">
+            <div>
+                <div class="brand-title">AeroFarm ERP</div>
+                <div class="brand-subtitle">Aeroponic Ops & Accounting</div>
+            </div>
+        </div>
+        <ul class="nav-list">
+            <li class="nav-item"><a href="/index.html">Dashboard</a></li>
+            <li class="nav-item"><a href="/contacts.html">Contacts</a></li>
+            <li class="nav-item"><a href="/products.html">Products</a></li>
+            <li class="nav-item"><a href="/accounts.html">Chart of Accounts</a></li>
+            <li class="nav-item"><a href="/towers.html">Towers & Telemetry</a></li>
+            <li class="nav-item active"><a href="/purchases.html">Purchases</a></li>
+            <li class="nav-item"><a href="/sales.html">Sales</a></li>
+            <li class="nav-item"><a href="/reports.html">Reports</a></li>
+        </ul>
+    </aside>
+
+    <main class="app-main">
+        <header class="top-bar">
+            <h1 class="page-title">Procurement & Accounts Payable</h1>
+            <div class="date-display" id="current-date">--</div>
+        </header>
+
+        <div class="content-container">
+            <div id="alert-box" class="alert"></div>
+
+            <!-- Create PO Form -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Create Purchase Order (PO)</span>
+                </div>
+                <form id="po-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="po-vendor-select">Vendor</label>
+                            <select id="po-vendor-select" class="form-control" required>
+                                <option value="">-- Select Vendor --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="po-product-select">Product / Supply</label>
+                            <select id="po-product-select" class="form-control" required>
+                                <option value="">-- Select Product --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="po-qty">Quantity</label>
+                            <input type="number" step="1" id="po-qty" class="form-control" placeholder="10" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Purchase Order</button>
+                </form>
+            </div>
+
+            <!-- PO Table -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Purchase Orders Directory</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>PO Ref</th>
+                                <th>Vendor Name</th>
+                                <th>Product</th>
+                                <th class="text-right">Qty</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="po-table-body">
+                            <tr><td colspan="6">Loading purchase orders...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Vendor Bills Table -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Vendor Bills & Payables</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Bill ID</th>
+                                <th>PO Ref</th>
+                                <th>Vendor</th>
+                                <th class="text-right">Amount</th>
+                                <th>Payment Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bills-table-body">
+                            <tr><td colspan="6">Loading vendor bills...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/purchases.js"></script>
+</body>
+</html>

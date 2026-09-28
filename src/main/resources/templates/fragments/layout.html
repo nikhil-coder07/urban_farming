@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="html_head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' - AeroFarm ERP'">AeroFarm ERP</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <!-- Reusable Sidebar -->
+    <aside class="app-sidebar" th:fragment="sidebar(activeNav)">
+        <div class="brand-header">
+            <div>
+                <div class="brand-title">AeroFarm ERP</div>
+                <div class="brand-subtitle">Aeroponic Ops & Accounting</div>
+            </div>
+        </div>
+        <ul class="nav-list">
+            <li class="nav-item" th:classappend="${activeNav == 'dashboard'} ? ' active' : ''">
+                <a th:href="@{/}">Dashboard</a>
+            </li>
+            <li class="nav-item" th:classappend="${activeNav == 'contacts'} ? ' active' : ''">
+                <a th:href="@{/contacts}">Contacts</a>
+            </li>
+            <li class="nav-item" th:classappend="${activeNav == 'products'} ? ' active' : ''">
+                <a th:href="@{/products}">Products</a>
+            </li>
+            <li class="nav-item" th:classappend="${activeNav == 'accounts'} ? ' active' : ''">
+                <a th:href="@{/accounts}">Chart of Accounts</a>
+            </li>
+            <li class="nav-item" th:classappend="${activeNav == 'towers'} ? ' active' : ''">
+                <a th:href="@{/towers}">Towers & Telemetry</a>
+            </li>
+            <li class="nav-item" th:classappend="${activeNav == 'purchases'} ? ' active' : ''">
+                <a th:href="@{/purchases}">Purchases</a>
+            </li>
+            <li class="nav-item" th:classappend="${activeNav == 'sales'} ? ' active' : ''">
+                <a th:href="@{/sales}">Sales</a>
+            </li>
+            <li class="nav-item" th:classappend="${activeNav == 'reports'} ? ' active' : ''">
+                <a th:href="@{/reports}">Reports</a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Reusable Top Bar -->
+    <header class="top-bar" th:fragment="topbar(title)">
+        <h1 class="page-title" th:text="${title}">Page Title</h1>
+        <div class="date-display" th:text="${#temporals.format(#temporals.createNow(), 'EEEE, dd MMM yyyy')}">Date</div>
+    </header>
+
+</body>
+</html>

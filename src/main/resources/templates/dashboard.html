@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('Dashboard')}"></head>
+<body>
+    <aside th:replace="~{fragments/layout :: sidebar('dashboard')}"></aside>
+
+    <main class="app-main">
+        <header th:replace="~{fragments/layout :: topbar('Operational & Financial Overview')}"></header>
+
+        <div class="content-container">
+            <div th:if="${successMessage}" class="alert alert-success" style="display:block;" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="alert alert-danger" style="display:block;" th:text="${errorMessage}"></div>
+
+            <!-- Summary Metric Cards -->
+            <div class="card-grid">
+                <div class="metric-card">
+                    <div class="metric-title">Total Revenue</div>
+                    <div class="metric-value" th:classappend="${totalRevenue == null or totalRevenue == 0} ? ' metric-value--zero' : ''"
+                         th:text="'₹' + ${#numbers.formatDecimal(totalRevenue != null ? totalRevenue : 0, 1, 'COMMA', 2, 'POINT')}">₹0.00</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Total Expenses</div>
+                    <div class="metric-value" th:classappend="${totalExpenses == null or totalExpenses == 0} ? ' metric-value--zero' : ''"
+                         th:text="'₹' + ${#numbers.formatDecimal(totalExpenses != null ? totalExpenses : 0, 1, 'COMMA', 2, 'POINT')}">₹0.00</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Open Invoices</div>
+                    <div class="metric-value" th:classappend="${openInvoicesCount == 0} ? ' metric-value--zero' : ''"
+                         th:text="${openInvoicesCount} + ' (₹' + ${#numbers.formatDecimal(openInvoicesAmount, 1, 'COMMA', 2, 'POINT')} + ')'">0 (₹0.00)</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Open Bills</div>
+                    <div class="metric-value" th:classappend="${openBillsCount == 0} ? ' metric-value--zero' : ''"
+                         th:text="${openBillsCount} + ' (₹' + ${#numbers.formatDecimal(openBillsAmount, 1, 'COMMA', 2, 'POINT')} + ')'">0 (₹0.00)</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Active Towers</div>
+                    <div class="metric-value" th:classappend="${activeTowersCount == 0} ? ' metric-value--zero' : ''"
+                         th:text="${activeTowersCount}">0</div>
+                </div>
+            </div>
+
+            <!-- Telemetry & Mist Cycle Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Latest Tower Telemetry & Mist Cycle Status</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Tower ID</th>
+                                <th>Zone Name</th>
+                                <th class="col-num">Humidity (%)</th>
+                                <th class="col-num">Nutrient PPM</th>
+                                <th>Timestamp</th>
+                                <th>Mist Cycle Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(latestTelemetry)}">
+                                <td colspan="6" style="color:var(--color-text-muted);font-style:italic;padding:16px 12px;">No telemetry readings recorded yet.</td>
+                            </tr>
+                            <tr th:each="t : ${latestTelemetry}">
+                                <td class="mono" th:text="'#TWR-' + ${t.tower != null ? t.tower.id : '-'}">#TWR-1</td>
+                                <td th:text="${t.tower != null ? t.tower.zoneName : 'N/A'}">Aeroponic Module 1</td>
+                                <td class="mono col-num" th:text="${#numbers.formatDecimal(t.humidity, 1, 1)} + '%'">65.5%</td>
+                                <td class="mono col-num" th:text="${#numbers.formatDecimal(t.nutrientPpm, 1, 0)} + ' PPM'">950 PPM</td>
+                                <td class="mono" th:text="${#temporals.format(t.recordedAt, 'dd MMM yyyy, HH:mm:ss')}">27 Sep 2026, 01:00</td>
+                                <td>
+                                    <span th:if="${t.mistTriggered}" class="badge badge-warning">AUTO-MIST TRIGGERED</span>
+                                    <span th:unless="${t.mistTriggered}" class="badge badge-success">NORMAL</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

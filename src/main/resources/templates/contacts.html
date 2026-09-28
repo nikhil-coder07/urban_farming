@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('Contacts')}"></head>
+<body>
+    <aside th:replace="~{fragments/layout :: sidebar('contacts')}"></aside>
+
+    <main class="app-main">
+        <header th:replace="~{fragments/layout :: topbar('Contact Management (Vendors & Customers)')}"></header>
+
+        <div class="content-container">
+            <div th:if="${successMessage}" class="alert alert-success" style="display:block;" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="alert alert-danger" style="display:block;" th:text="${errorMessage}"></div>
+
+            <!-- Add / Edit Contact Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span th:text="${contact.id == null} ? 'Add New Contact' : 'Edit Contact #' + ${contact.id}">Add New Contact</span>
+                </div>
+                <form th:action="@{/contacts}" th:object="${contact}" method="post">
+                    <input type="hidden" th:field="*{id}" />
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Name *</label>
+                            <input type="text" class="form-control" th:field="*{name}" placeholder="e.g. FreshMart Supermarket" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Type *</label>
+                            <select class="form-control" th:field="*{type}" required>
+                                <option value="CUSTOMER">CUSTOMER</option>
+                                <option value="VENDOR">VENDOR</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="text" class="form-control" th:field="*{phone}" placeholder="10-digit number" />
+                        </div>
+                        <div class="form-group">
+                            <label>Address</label>
+                            <input type="text" class="form-control" th:field="*{address}" placeholder="Street, City, State" />
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" th:text="${contact.id == null} ? 'Save Contact' : 'Update Contact'">Save Contact</button>
+                    <a th:if="${contact.id != null}" th:href="@{/contacts}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+
+            <!-- Contacts List Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Existing Contacts (<span th:text="${#lists.size(contacts)}">0</span>)</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Phone</th>
+                                <th>Address</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(contacts)}">
+                                <td colspan="6" style="color:var(--color-text-muted);font-style:italic;">No contacts found.</td>
+                            </tr>
+                            <tr th:each="c : ${contacts}">
+                                <td class="mono" th:text="'#' + ${c.id}">#1</td>
+                                <td style="font-weight:600;" th:text="${c.name}">FreshMart</td>
+                                <td>
+                                    <span th:if="${c.type.name() == 'CUSTOMER'}" class="badge badge-info">CUSTOMER</span>
+                                    <span th:if="${c.type.name() == 'VENDOR'}" class="badge badge-warning">VENDOR</span>
+                                </td>
+                                <td class="mono" th:text="${c.phone != null and !c.phone.isEmpty()} ? ${c.phone} : '-'">-</td>
+                                <td th:text="${c.address != null and !c.address.isEmpty()} ? ${c.address} : '-'">-</td>
+                                <td>
+                                    <a th:href="@{'/contacts?editId=' + ${c.id}}" class="btn btn-secondary btn-sm">Edit</a>
+                                    <form th:action="@{'/contacts/' + ${c.id} + '/delete'}" method="post" style="display:inline;" onsubmit="return confirm('Delete this contact?');">
+                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('Reports')}"></head>
+<body>
+    <aside th:replace="~{fragments/layout :: sidebar('reports')}"></aside>
+
+    <main class="app-main">
+        <header th:replace="~{fragments/layout :: topbar('Financial Statements & Budget Analysis')}"></header>
+
+        <div class="content-container">
+            <!-- Balance Sheet Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Balance Sheet (Assets vs Liabilities)</span>
+                    <span class="mono" style="font-size:12px;color:var(--color-text-muted);"
+                          th:text="'Net Position: ₹' + ${#numbers.formatDecimal(balanceSheet.netPosition, 1, 'COMMA', 2, 'POINT')}">Net Position: ₹0.00</span>
+                </div>
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
+                    <!-- Assets -->
+                    <div>
+                        <h4 style="font-size:12px;text-transform:uppercase;color:var(--color-primary);margin-bottom:8px;">Assets (Debit Balances)</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>Account</th><th class="col-num">Balance (₹)</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="a : ${balanceSheet.assets}">
+                                    <td th:text="${a.name}">Cash/Bank</td>
+                                    <td class="mono col-num" th:text="'₹' + ${#numbers.formatDecimal(a.balance, 1, 'COMMA', 2, 'POINT')}">₹0.00</td>
+                                </tr>
+                                <tr style="background:#EAE8E1;font-weight:700;">
+                                    <td>Total Assets</td>
+                                    <td class="mono col-num" th:text="'₹' + ${#numbers.formatDecimal(balanceSheet.totalAssets, 1, 'COMMA', 2, 'POINT')}">₹0.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Liabilities -->
+                    <div>
+                        <h4 style="font-size:12px;text-transform:uppercase;color:var(--color-danger);margin-bottom:8px;">Liabilities (Credit Balances)</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>Account</th><th class="col-num">Balance (₹)</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="l : ${balanceSheet.liabilities}">
+                                    <td th:text="${l.name}">Supplier Payables</td>
+                                    <td class="mono col-num" th:text="'₹' + ${#numbers.formatDecimal(l.balance, 1, 'COMMA', 2, 'POINT')}">₹0.00</td>
+                                </tr>
+                                <tr style="background:#EAE8E1;font-weight:700;">
+                                    <td>Total Liabilities</td>
+                                    <td class="mono col-num" th:text="'₹' + ${#numbers.formatDecimal(balanceSheet.totalLiabilities, 1, 'COMMA', 2, 'POINT')}">₹0.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profit & Loss Statement Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Profit & Loss Statement</span>
+                    <span class="mono" style="font-size:12px;font-weight:700;"
+                          th:styleappend="${profitLoss.netProfit >= 0} ? 'color:var(--color-success);' : 'color:var(--color-danger);'"
+                          th:text="'Net Profit: ₹' + ${#numbers.formatDecimal(profitLoss.netProfit, 1, 'COMMA', 2, 'POINT')}">Net Profit: ₹0.00</span>
+                </div>
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
+                    <!-- Income -->
+                    <div>
+                        <h4 style="font-size:12px;text-transform:uppercase;color:var(--color-primary);margin-bottom:8px;">Income (Revenue)</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>Account</th><th class="col-num">Amount (₹)</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="i : ${profitLoss.income}">
+                                    <td th:text="${i.name}">Produce Sales</td>
+                                    <td class="mono col-num" th:text="'₹' + ${#numbers.formatDecimal(i.balance, 1, 'COMMA', 2, 'POINT')}">₹0.00</td>
+                                </tr>
+                                <tr style="background:#EAE8E1;font-weight:700;">
+                                    <td>Total Revenue</td>
+                                    <td class="mono col-num" th:text="'₹' + ${#numbers.formatDecimal(profitLoss.totalIncome, 1, 'COMMA', 2, 'POINT')}">₹0.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Expenses -->
+                    <div>
+                        <h4 style="font-size:12px;text-transform:uppercase;color:var(--color-warning);margin-bottom:8px;">Expenses (Operational)</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>Account</th><th class="col-num">Amount (₹)</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="e : ${profitLoss.expenses}">
+                                    <td th:text="${e.name}">Nutrient Chemical Costs</td>
+                                    <td class="mono col-num" th:text="'₹' + ${#numbers.formatDecimal(e.balance, 1, 'COMMA', 2, 'POINT')}">₹0.00</td>
+                                </tr>
+                                <tr style="background:#EAE8E1;font-weight:700;">
+                                    <td>Total Expenses</td>
+                                    <td class="mono col-num" th:text="'₹' + ${#numbers.formatDecimal(profitLoss.totalExpenses, 1, 'COMMA', 2, 'POINT')}">₹0.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Budget vs Actual Variance Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Zone / Module Budget vs Actual Variance</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Analytic Zone</th>
+                                <th>Period</th>
+                                <th class="col-num">Allocated Budget</th>
+                                <th class="col-num">Actual Spend</th>
+                                <th class="col-num">Variance</th>
+                                <th class="col-num">% Consumed</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(budgetReports)}">
+                                <td colspan="6" style="color:var(--color-text-muted);font-style:italic;">No budget allocations defined.</td>
+                            </tr>
+                            <tr th:each="br : ${budgetReports}">
+                                <td style="font-weight:600;" th:text="${br.zoneName}">Module 1</td>
+                                <td class="mono" th:text="${br.period}">2026-Q3</td>
+                                <td class="mono col-num" th:text="'₹' + ${#numbers.formatDecimal(br.allocatedAmount, 1, 'COMMA', 2, 'POINT')}">₹5,000.00</td>
+                                <td class="mono col-num" th:text="'₹' + ${#numbers.formatDecimal(br.actualExpense, 1, 'COMMA', 2, 'POINT')}">₹0.00</td>
+                                <td class="mono col-num"
+                                    th:styleappend="${br.variance >= 0} ? 'color:var(--color-success);' : 'color:var(--color-danger);'"
+                                    th:text="'₹' + ${#numbers.formatDecimal(br.variance, 1, 'COMMA', 2, 'POINT')}">₹5,000.00</td>
+                                <td class="mono col-num">
+                                    <span class="badge"
+                                          th:classappend="${br.percentageUsed <= 80} ? 'badge-success' : (${br.percentageUsed <= 100} ? 'badge-warning' : 'badge-danger')"
+                                          th:text="${#numbers.formatDecimal(br.percentageUsed, 1, 1)} + '%'">0.0%</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

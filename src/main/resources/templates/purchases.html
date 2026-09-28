@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('Purchases')}"></head>
+<body>
+    <aside th:replace="~{fragments/layout :: sidebar('purchases')}"></aside>
+
+    <main class="app-main">
+        <header th:replace="~{fragments/layout :: topbar('Purchases & Vendor Bills')}"></header>
+
+        <div class="content-container">
+            <div th:if="${successMessage}" class="alert alert-success" style="display:block;" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="alert alert-danger" style="display:block;" th:text="${errorMessage}"></div>
+
+            <!-- Create Purchase Order Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Create Purchase Order</span>
+                </div>
+                <form th:action="@{/purchases/orders}" th:object="${poDto}" method="post">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Vendor *</label>
+                            <select class="form-control" th:field="*{vendorId}" required>
+                                <option value="" disabled selected>-- Select Vendor --</option>
+                                <option th:each="v : ${vendors}" th:value="${v.id}" th:text="${v.name} + ' (' + ${v.phone} + ')'"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Product / Supplies *</label>
+                            <select class="form-control" th:field="*{productId}" required>
+                                <option value="" disabled selected>-- Select Product --</option>
+                                <option th:each="p : ${products}" th:value="${p.id}" th:text="${p.name} + ' (₹' + ${p.unitPrice} + ' / ' + ${p.uom} + ')'"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Quantity *</label>
+                            <input type="number" min="1" class="form-control" th:field="*{qty}" placeholder="10" required />
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Purchase Order</button>
+                </form>
+            </div>
+
+            <!-- Purchase Orders List -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Purchase Orders (<span th:text="${#lists.size(purchaseOrders)}">0</span>)</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>PO #</th>
+                                <th>Date</th>
+                                <th>Vendor</th>
+                                <th>Product</th>
+                                <th class="col-num">Qty</th>
+                                <th class="col-num">Unit Price</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(purchaseOrders)}">
+                                <td colspan="8" style="color:var(--color-text-muted);font-style:italic;">No purchase orders placed yet.</td>
+                            </tr>
+                            <tr th:each="po : ${purchaseOrders}">
+                                <td class="mono" th:text="'#PO-' + ${po.id}">#PO-1</td>
+                                <td class="mono" th:text="${#temporals.format(po.createdAt, 'dd MMM yyyy')}">27 Sep</td>
+                                <td th:text="${po.vendor != null ? po.vendor.name : '-'}">NutriGrow</td>
+                                <td th:text="${po.product != null ? po.product.name : '-'}">Mineral Solution</td>
+                                <td class="mono col-num" th:text="${po.qty}">10</td>
+                                <td class="mono col-num" th:text="'₹' + ${#numbers.formatDecimal(po.product.unitPrice, 1, 'COMMA', 2, 'POINT')}">₹850.00</td>
+                                <td>
+                                    <span th:if="${po.status.name() == 'PENDING'}" class="badge badge-warning">PENDING</span>
+                                    <span th:if="${po.status.name() == 'BILLED'}" class="badge badge-success">BILLED</span>
+                                </td>
+                                <td>
+                                    <form th:if="${po.status.name() == 'PENDING'}" th:action="@{'/purchases/orders/' + ${po.id} + '/convert'}" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-primary btn-sm">Convert to Bill</button>
+                                    </form>
+                                    <span th:if="${po.status.name() == 'BILLED'}" style="color:var(--color-text-muted);font-size:11px;">Billed</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Vendor Bills List -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Vendor Bills & Payments (<span th:text="${#lists.size(vendorBills)}">0</span>)</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Bill #</th>
+                                <th>PO Ref</th>
+                                <th>Bill Date</th>
+                                <th class="col-num">Amount</th>
+                                <th>Payment Status</th>
+                                <th>Pay / Settle</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(vendorBills)}">
+                                <td colspan="6" style="color:var(--color-text-muted);font-style:italic;">No vendor bills recorded.</td>
+                            </tr>
+                            <tr th:each="b : ${vendorBills}">
+                                <td class="mono" th:text="'#BILL-' + ${b.id}">#BILL-1</td>
+                                <td class="mono" th:text="${b.purchaseOrder != null ? '#PO-' + b.purchaseOrder.id : '-'}">#PO-1</td>
+                                <td class="mono" th:text="${#temporals.format(b.billDate, 'dd MMM yyyy')}">27 Sep</td>
+                                <td class="mono col-num" style="font-weight:600;" th:text="'₹' + ${#numbers.formatDecimal(b.amount, 1, 'COMMA', 2, 'POINT')}">₹8,500.00</td>
+                                <td>
+                                    <span th:if="${b.paidStatus.name() == 'UNPAID'}" class="badge badge-danger">UNPAID</span>
+                                    <span th:if="${b.paidStatus.name() == 'PAID'}" class="badge badge-success">PAID</span>
+                                </td>
+                                <td>
+                                    <form th:if="${b.paidStatus.name() == 'UNPAID'}" th:action="@{'/purchases/bills/' + ${b.id} + '/pay'}" method="post" style="display:inline-flex;gap:4px;align-items:center;">
+                                        <select name="mode" class="form-control" style="padding:3px 6px;font-size:11px;" required>
+                                            <option value="BANK">BANK</option>
+                                            <option value="CASH">CASH</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-primary btn-sm">Pay Bill</button>
+                                    </form>
+                                    <span th:if="${b.paidStatus.name() == 'PAID'}" style="color:var(--color-success);font-weight:600;font-size:11px;">✓ Settled</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

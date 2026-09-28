@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Reports - AeroFarm ERP</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <aside class="app-sidebar">
+        <div class="brand-header">
+            <div>
+                <div class="brand-title">AeroFarm ERP</div>
+                <div class="brand-subtitle">Aeroponic Ops & Accounting</div>
+            </div>
+        </div>
+        <ul class="nav-list">
+            <li class="nav-item"><a href="/index.html">Dashboard</a></li>
+            <li class="nav-item"><a href="/contacts.html">Contacts</a></li>
+            <li class="nav-item"><a href="/products.html">Products</a></li>
+            <li class="nav-item"><a href="/accounts.html">Chart of Accounts</a></li>
+            <li class="nav-item"><a href="/towers.html">Towers & Telemetry</a></li>
+            <li class="nav-item"><a href="/purchases.html">Purchases</a></li>
+            <li class="nav-item"><a href="/sales.html">Sales</a></li>
+            <li class="nav-item active"><a href="/reports.html">Reports</a></li>
+        </ul>
+    </aside>
+
+    <main class="app-main">
+        <header class="top-bar">
+            <h1 class="page-title">Financial & Analytic Reporting</h1>
+            <div class="date-display" id="current-date">--</div>
+        </header>
+
+        <div class="content-container">
+            <div id="alert-box" class="alert"></div>
+
+            <div class="tab-header">
+                <button class="tab-btn active" onclick="switchTab('balance-sheet')">Balance Sheet</button>
+                <button class="tab-btn" onclick="switchTab('profit-loss')">Profit & Loss</button>
+                <button class="tab-btn" onclick="switchTab('budget-report')">Budget vs Actual</button>
+            </div>
+
+            <!-- Tab 1: Balance Sheet -->
+            <div id="tab-balance-sheet" class="tab-content active">
+                <div class="panel">
+                    <div class="panel-header">
+                        <span>Balance Sheet Statement</span>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <!-- Assets -->
+                        <div>
+                            <h3 style="font-size: 13px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; color: var(--color-success);">ASSETS</h3>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Account</th>
+                                        <th class="text-right">Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bs-assets-body">
+                                    <tr><td colspan="2">Loading assets...</td></tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr style="font-weight: 700; background-color: #EAE8E1;">
+                                        <td>TOTAL ASSETS</td>
+                                        <td class="mono text-right" id="bs-total-assets">₹0.00</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        <!-- Liabilities -->
+                        <div>
+                            <h3 style="font-size: 13px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; color: var(--color-warning);">LIABILITIES</h3>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Account</th>
+                                        <th class="text-right">Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bs-liabilities-body">
+                                    <tr><td colspan="2">Loading liabilities...</td></tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr style="font-weight: 700; background-color: #EAE8E1;">
+                                        <td>TOTAL LIABILITIES</td>
+                                        <td class="mono text-right" id="bs-total-liabilities">₹0.00</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px; padding: 14px; background-color: #FAF9F6; border: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-weight: 700; text-transform: uppercase;">NET ASSET POSITION</span>
+                        <span style="font-family: var(--font-mono); font-size: 18px; font-weight: 700;" id="bs-net-position">₹0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Profit & Loss -->
+            <div id="tab-profit-loss" class="tab-content">
+                <div class="panel">
+                    <div class="panel-header">
+                        <span>Profit & Loss Statement (P&L)</span>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <!-- Income -->
+                        <div>
+                            <h3 style="font-size: 13px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; color: var(--color-success);">INCOME</h3>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Account</th>
+                                        <th class="text-right">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pl-income-body">
+                                    <tr><td colspan="2">Loading income...</td></tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr style="font-weight: 700; background-color: #EAE8E1;">
+                                        <td>TOTAL REVENUE</td>
+                                        <td class="mono text-right" id="pl-total-income">₹0.00</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        <!-- Expenses -->
+                        <div>
+                            <h3 style="font-size: 13px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; color: var(--color-danger);">EXPENSES</h3>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Account</th>
+                                        <th class="text-right">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pl-expenses-body">
+                                    <tr><td colspan="2">Loading expenses...</td></tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr style="font-weight: 700; background-color: #EAE8E1;">
+                                        <td>TOTAL EXPENSES</td>
+                                        <td class="mono text-right" id="pl-total-expenses">₹0.00</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px; padding: 14px; background-color: #FAF9F6; border: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-weight: 700; text-transform: uppercase;">NET OPERATING PROFIT / (LOSS)</span>
+                        <span style="font-family: var(--font-mono); font-size: 18px; font-weight: 700;" id="pl-net-profit">₹0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: Budget vs Actual -->
+            <div id="tab-budget-report" class="tab-content">
+                <div class="panel">
+                    <div class="panel-header">
+                        <span>Analytic Zone Budget vs Actual Expense</span>
+                    </div>
+
+                    <div class="form-group" style="max-width: 300px; margin-bottom: 16px;">
+                        <label for="budget-zone-select">Select Analytic Zone</label>
+                        <select id="budget-zone-select" class="form-control" onchange="loadBudgetReport()">
+                            <option value="">-- Select Zone --</option>
+                        </select>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Analytic Zone</th>
+                                    <th>Period</th>
+                                    <th class="text-right">Allocated Budget</th>
+                                    <th class="text-right">Actual Expense</th>
+                                    <th class="text-right">Variance</th>
+                                    <th>Budget Utilization</th>
+                                </tr>
+                            </thead>
+                            <tbody id="budget-report-body">
+                                <tr><td colspan="6">Select an analytic zone above to view budget utilization.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/reports.js"></script>
+</body>
+</html>

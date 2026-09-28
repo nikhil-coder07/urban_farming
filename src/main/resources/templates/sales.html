@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('Sales')}"></head>
+<body>
+    <aside th:replace="~{fragments/layout :: sidebar('sales')}"></aside>
+
+    <main class="app-main">
+        <header th:replace="~{fragments/layout :: topbar('Sales Orders & Customer Invoices')}"></header>
+
+        <div class="content-container">
+            <div th:if="${successMessage}" class="alert alert-success" style="display:block;" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="alert alert-danger" style="display:block;" th:text="${errorMessage}"></div>
+
+            <!-- Create Sales Order Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Create Sales Order</span>
+                </div>
+                <form th:action="@{/sales/orders}" th:object="${soDto}" method="post">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Customer *</label>
+                            <select class="form-control" th:field="*{customerId}" required>
+                                <option value="" disabled selected>-- Select Customer --</option>
+                                <option th:each="c : ${customers}" th:value="${c.id}" th:text="${c.name} + ' (' + ${c.phone} + ')'"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Produce Product *</label>
+                            <select class="form-control" th:field="*{productId}" required>
+                                <option value="" disabled selected>-- Select Product --</option>
+                                <option th:each="p : ${products}" th:value="${p.id}" th:text="${p.name} + ' (₹' + ${p.unitPrice} + ' / ' + ${p.uom} + ')'"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Requested Quantity (KG/Unit) *</label>
+                            <input type="number" min="1" class="form-control" th:field="*{qty}" placeholder="50" required />
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Sales Order</button>
+                </form>
+            </div>
+
+            <!-- Sales Orders List -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Sales Orders (<span th:text="${#lists.size(salesOrders)}">0</span>)</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>SO #</th>
+                                <th>Date</th>
+                                <th>Customer</th>
+                                <th>Product</th>
+                                <th class="col-num">Ordered Qty</th>
+                                <th class="col-num">Unit Price</th>
+                                <th>Status</th>
+                                <th>Deliver & Invoice</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(salesOrders)}">
+                                <td colspan="8" style="color:var(--color-text-muted);font-style:italic;">No sales orders placed yet.</td>
+                            </tr>
+                            <tr th:each="so : ${salesOrders}">
+                                <td class="mono" th:text="'#SO-' + ${so.id}">#SO-1</td>
+                                <td class="mono" th:text="${#temporals.format(so.createdAt, 'dd MMM yyyy')}">27 Sep</td>
+                                <td th:text="${so.customer != null ? so.customer.name : '-'}">FreshMart</td>
+                                <td th:text="${so.product != null ? so.product.name : '-'}">Organic Lettuce</td>
+                                <td class="mono col-num" th:text="${so.qty}">50</td>
+                                <td class="mono col-num" th:text="'₹' + ${#numbers.formatDecimal(so.product.unitPrice, 1, 'COMMA', 2, 'POINT')}">₹120.00</td>
+                                <td>
+                                    <span th:if="${so.status.name() == 'PENDING'}" class="badge badge-warning">PENDING</span>
+                                    <span th:if="${so.status.name() == 'INVOICED'}" class="badge badge-success">INVOICED</span>
+                                </td>
+                                <td>
+                                    <form th:if="${so.status.name() == 'PENDING'}" th:action="@{'/sales/orders/' + ${so.id} + '/convert'}" method="post" style="display:inline-flex;gap:4px;align-items:center;">
+                                        <input type="number" name="deliveredKg" step="0.1" min="0.1" style="width:70px;padding:3px 6px;font-size:11px;" class="form-control" th:value="${so.qty}" placeholder="Kg" required />
+                                        <button type="submit" class="btn btn-primary btn-sm">Generate Invoice</button>
+                                    </form>
+                                    <span th:if="${so.status.name() == 'INVOICED'}" style="color:var(--color-text-muted);font-size:11px;">Invoiced</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Customer Invoices List -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Customer Invoices & Payments (<span th:text="${#lists.size(customerInvoices)}">0</span>)</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Invoice #</th>
+                                <th>SO Ref</th>
+                                <th>Invoice Date</th>
+                                <th class="col-num">Delivered</th>
+                                <th class="col-num">Total Amount</th>
+                                <th>Payment Status</th>
+                                <th>Collect Payment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(customerInvoices)}">
+                                <td colspan="7" style="color:var(--color-text-muted);font-style:italic;">No customer invoices generated.</td>
+                            </tr>
+                            <tr th:each="inv : ${customerInvoices}">
+                                <td class="mono" th:text="'#INV-' + ${inv.id}">#INV-1</td>
+                                <td class="mono" th:text="${inv.salesOrder != null ? '#SO-' + inv.salesOrder.id : '-'}">#SO-1</td>
+                                <td class="mono" th:text="${#temporals.format(inv.invoiceDate, 'dd MMM yyyy')}">27 Sep</td>
+                                <td class="mono col-num" th:text="${inv.deliveredKg} + ' KG'">50.0 KG</td>
+                                <td class="mono col-num" style="font-weight:600;" th:text="'₹' + ${#numbers.formatDecimal(inv.amount, 1, 'COMMA', 2, 'POINT')}">₹6,000.00</td>
+                                <td>
+                                    <span th:if="${inv.paidStatus.name() == 'UNPAID'}" class="badge badge-danger">UNPAID</span>
+                                    <span th:if="${inv.paidStatus.name() == 'PAID'}" class="badge badge-success">PAID</span>
+                                </td>
+                                <td>
+                                    <form th:if="${inv.paidStatus.name() == 'UNPAID'}" th:action="@{'/sales/invoices/' + ${inv.id} + '/pay'}" method="post" style="display:inline-flex;gap:4px;align-items:center;">
+                                        <select name="mode" class="form-control" style="padding:3px 6px;font-size:11px;" required>
+                                            <option value="BANK">BANK</option>
+                                            <option value="CASH">CASH</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-primary btn-sm">Receive Payment</button>
+                                    </form>
+                                    <span th:if="${inv.paidStatus.name() == 'PAID'}" style="color:var(--color-success);font-weight:600;font-size:11px;">✓ Received</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('Chart of Accounts')}"></head>
+<body>
+    <aside th:replace="~{fragments/layout :: sidebar('accounts')}"></aside>
+
+    <main class="app-main">
+        <header th:replace="~{fragments/layout :: topbar('Financial Accounts & Ledgers')}"></header>
+
+        <div class="content-container">
+            <div th:if="${successMessage}" class="alert alert-success" style="display:block;" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="alert alert-danger" style="display:block;" th:text="${errorMessage}"></div>
+
+            <!-- Add / Edit Account Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span th:text="${account.id == null} ? 'Create Ledger Account' : 'Edit Account #' + ${account.id}">Create Ledger Account</span>
+                </div>
+                <form th:action="@{/accounts}" th:object="${account}" method="post">
+                    <input type="hidden" th:field="*{id}" />
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Account Name *</label>
+                            <input type="text" class="form-control" th:field="*{name}" placeholder="e.g. Nutrient Chemical Costs" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Account Type *</label>
+                            <select class="form-control" th:field="*{type}" required>
+                                <option value="ASSET">ASSET (Cash, Receivables, Infrastructure)</option>
+                                <option value="LIABILITY">LIABILITY (Accounts Payable, Loans)</option>
+                                <option value="INCOME">INCOME (Produce Sales, Grants)</option>
+                                <option value="EXPENSE">EXPENSE (Nutrients, Electricity, Seeds)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" th:text="${account.id == null} ? 'Save Account' : 'Update Account'">Save Account</button>
+                    <a th:if="${account.id != null}" th:href="@{/accounts}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+
+            <!-- Accounts List Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Chart of Accounts (<span th:text="${#lists.size(accounts)}">0</span>)</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Account ID</th>
+                                <th>Account Name</th>
+                                <th>Classification Type</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(accounts)}">
+                                <td colspan="4" style="color:var(--color-text-muted);font-style:italic;">No accounts found.</td>
+                            </tr>
+                            <tr th:each="a : ${accounts}">
+                                <td class="mono" th:text="'#' + ${a.id}">#1</td>
+                                <td style="font-weight:600;" th:text="${a.name}">Cash/Bank</td>
+                                <td>
+                                    <span th:if="${a.type.name() == 'ASSET'}" class="badge badge-success">ASSET</span>
+                                    <span th:if="${a.type.name() == 'LIABILITY'}" class="badge badge-danger">LIABILITY</span>
+                                    <span th:if="${a.type.name() == 'INCOME'}" class="badge badge-info">INCOME</span>
+                                    <span th:if="${a.type.name() == 'EXPENSE'}" class="badge badge-warning">EXPENSE</span>
+                                </td>
+                                <td>
+                                    <a th:href="@{'/accounts?editId=' + ${a.id}}" class="btn btn-secondary btn-sm">Edit</a>
+                                    <form th:action="@{'/accounts/' + ${a.id} + '/delete'}" method="post" style="display:inline;" onsubmit="return confirm('Delete this account?');">
+                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

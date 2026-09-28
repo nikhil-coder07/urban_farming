@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales - AeroFarm ERP</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <aside class="app-sidebar">
+        <div class="brand-header">
+            <div>
+                <div class="brand-title">AeroFarm ERP</div>
+                <div class="brand-subtitle">Aeroponic Ops & Accounting</div>
+            </div>
+        </div>
+        <ul class="nav-list">
+            <li class="nav-item"><a href="/index.html">Dashboard</a></li>
+            <li class="nav-item"><a href="/contacts.html">Contacts</a></li>
+            <li class="nav-item"><a href="/products.html">Products</a></li>
+            <li class="nav-item"><a href="/accounts.html">Chart of Accounts</a></li>
+            <li class="nav-item"><a href="/towers.html">Towers & Telemetry</a></li>
+            <li class="nav-item"><a href="/purchases.html">Purchases</a></li>
+            <li class="nav-item active"><a href="/sales.html">Sales</a></li>
+            <li class="nav-item"><a href="/reports.html">Reports</a></li>
+        </ul>
+    </aside>
+
+    <main class="app-main">
+        <header class="top-bar">
+            <h1 class="page-title">Commercial Sales & Revenue Accounting</h1>
+            <div class="date-display" id="current-date">--</div>
+        </header>
+
+        <div class="content-container">
+            <div id="alert-box" class="alert"></div>
+
+            <!-- Create SO Form -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Create Sales Order (SO)</span>
+                </div>
+                <form id="so-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="so-customer-select">Customer</label>
+                            <select id="so-customer-select" class="form-control" required>
+                                <option value="">-- Select Customer --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="so-product-select">Produce / Produce Product</label>
+                            <select id="so-product-select" class="form-control" required>
+                                <option value="">-- Select Product --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="so-qty">Ordered Quantity</label>
+                            <input type="number" step="1" id="so-qty" class="form-control" placeholder="50" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Sales Order</button>
+                </form>
+            </div>
+
+            <!-- SO Table -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Sales Orders Directory</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>SO Ref</th>
+                                <th>Customer Name</th>
+                                <th>Product</th>
+                                <th class="text-right">Qty</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="so-table-body">
+                            <tr><td colspan="6">Loading sales orders...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Customer Invoices Table -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Customer Invoices & Receivables</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Invoice Ref</th>
+                                <th>SO Ref</th>
+                                <th>Customer</th>
+                                <th class="text-right">Delivered KG</th>
+                                <th class="text-right">Invoice Amount</th>
+                                <th>Payment Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoices-table-body">
+                            <tr><td colspan="7">Loading customer invoices...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/sales.js"></script>
+</body>
+</html>

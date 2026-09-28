@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AeroFarm ERP</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <aside class="app-sidebar">
+        <div class="brand-header">
+            <div>
+                <div class="brand-title">AeroFarm ERP</div>
+                <div class="brand-subtitle">Aeroponic Ops & Accounting</div>
+            </div>
+        </div>
+        <ul class="nav-list">
+            <li class="nav-item active"><a href="/index.html">Dashboard</a></li>
+            <li class="nav-item"><a href="/contacts.html">Contacts</a></li>
+            <li class="nav-item"><a href="/products.html">Products</a></li>
+            <li class="nav-item"><a href="/accounts.html">Chart of Accounts</a></li>
+            <li class="nav-item"><a href="/towers.html">Towers & Telemetry</a></li>
+            <li class="nav-item"><a href="/purchases.html">Purchases</a></li>
+            <li class="nav-item"><a href="/sales.html">Sales</a></li>
+            <li class="nav-item"><a href="/reports.html">Reports</a></li>
+        </ul>
+    </aside>
+
+    <main class="app-main">
+        <header class="top-bar">
+            <h1 class="page-title">Operational & Financial Overview</h1>
+            <div class="date-display" id="current-date">--</div>
+        </header>
+
+        <div class="content-container">
+            <div id="alert-box" class="alert"></div>
+
+            <div class="card-grid">
+                <div class="metric-card">
+                    <div class="metric-title">Total Revenue</div>
+                    <div class="metric-value" id="total-revenue">₹0.00</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Total Expenses</div>
+                    <div class="metric-value" id="total-expenses">₹0.00</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Open Invoices</div>
+                    <div class="metric-value" id="open-invoices">0 (₹0.00)</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Open Bills</div>
+                    <div class="metric-value" id="open-bills">0 (₹0.00)</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Active Towers</div>
+                    <div class="metric-value" id="active-towers">0</div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Latest Tower Telemetry & Mist Cycle Status</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Tower ID</th>
+                                <th>Zone Name</th>
+                                <th class="col-num">Humidity (%)</th>
+                                <th class="col-num">Nutrient PPM</th>
+                                <th>Timestamp</th>
+                                <th>Mist Cycle Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="telemetry-table-body">
+                            <tr><td colspan="6">Loading telemetry readings...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>

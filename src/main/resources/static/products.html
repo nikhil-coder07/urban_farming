@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - AeroFarm ERP</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <aside class="app-sidebar">
+        <div class="brand-header">
+            <div>
+                <div class="brand-title">AeroFarm ERP</div>
+                <div class="brand-subtitle">Aeroponic Ops & Accounting</div>
+            </div>
+        </div>
+        <ul class="nav-list">
+            <li class="nav-item"><a href="/index.html">Dashboard</a></li>
+            <li class="nav-item"><a href="/contacts.html">Contacts</a></li>
+            <li class="nav-item active"><a href="/products.html">Products</a></li>
+            <li class="nav-item"><a href="/accounts.html">Chart of Accounts</a></li>
+            <li class="nav-item"><a href="/towers.html">Towers & Telemetry</a></li>
+            <li class="nav-item"><a href="/purchases.html">Purchases</a></li>
+            <li class="nav-item"><a href="/sales.html">Sales</a></li>
+            <li class="nav-item"><a href="/reports.html">Reports</a></li>
+        </ul>
+    </aside>
+
+    <main class="app-main">
+        <header class="top-bar">
+            <h1 class="page-title">Master Data: Products & Goods Catalog</h1>
+            <div class="date-display" id="current-date">--</div>
+        </header>
+
+        <div class="content-container">
+            <div id="alert-box" class="alert"></div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <span id="form-title">Add New Product</span>
+                </div>
+                <form id="product-form">
+                    <input type="hidden" id="product-id">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="product-name">Product Name</label>
+                            <input type="text" id="product-name" class="form-control" placeholder="e.g. Organic Lettuce" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-type">Type</label>
+                            <select id="product-type" class="form-control" required>
+                                <option value="GOODS">GOODS</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-price">Unit Price (₹)</label>
+                            <input type="number" step="0.01" id="product-price" class="form-control" placeholder="120.00" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-uom">Unit of Measure (UOM)</label>
+                            <select id="product-uom" class="form-control" required>
+                                <option value="KG">KG</option>
+                                <option value="UNIT">UNIT</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" class="btn btn-primary" id="save-btn">Save Product</button>
+                        <button type="button" class="btn btn-secondary" id="cancel-btn" style="display: none;">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Products Catalog</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Product Name</th>
+                                <th>Type</th>
+                                <th class="text-right">Unit Price</th>
+                                <th>UOM</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-table-body">
+                            <tr><td colspan="6">Loading products...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/products.js"></script>
+</body>
+</html>

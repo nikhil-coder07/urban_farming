@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: html_head('Products')}"></head>
+<body>
+    <aside th:replace="~{fragments/layout :: sidebar('products')}"></aside>
+
+    <main class="app-main">
+        <header th:replace="~{fragments/layout :: topbar('Product Catalog & Supplies')}"></header>
+
+        <div class="content-container">
+            <div th:if="${successMessage}" class="alert alert-success" style="display:block;" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="alert alert-danger" style="display:block;" th:text="${errorMessage}"></div>
+
+            <!-- Add / Edit Product Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span th:text="${product.id == null} ? 'Add New Product' : 'Edit Product #' + ${product.id}">Add New Product</span>
+                </div>
+                <form th:action="@{/products}" th:object="${product}" method="post">
+                    <input type="hidden" th:field="*{id}" />
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Product Name *</label>
+                            <input type="text" class="form-control" th:field="*{name}" placeholder="e.g. Organic Butterhead Lettuce" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Type *</label>
+                            <select class="form-control" th:field="*{type}" required>
+                                <option value="GOODS">GOODS (Physical Produce/Supplies)</option>
+                                <option value="SERVICE">SERVICE</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Unit Price (₹) *</label>
+                            <input type="number" step="0.01" min="0.01" class="form-control" th:field="*{unitPrice}" placeholder="120.00" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Unit of Measure (UOM) *</label>
+                            <input type="text" class="form-control" th:field="*{uom}" placeholder="KG or UNIT" required />
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" th:text="${product.id == null} ? 'Save Product' : 'Update Product'">Save Product</button>
+                    <a th:if="${product.id != null}" th:href="@{/products}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+
+            <!-- Products List Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Available Products (<span th:text="${#lists.size(products)}">0</span>)</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th class="col-num">Unit Price</th>
+                                <th>UOM</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(products)}">
+                                <td colspan="6" style="color:var(--color-text-muted);font-style:italic;">No products found.</td>
+                            </tr>
+                            <tr th:each="p : ${products}">
+                                <td class="mono" th:text="'#' + ${p.id}">#1</td>
+                                <td style="font-weight:600;" th:text="${p.name}">Lettuce</td>
+                                <td>
+                                    <span class="badge badge-info" th:text="${p.type}">GOODS</span>
+                                </td>
+                                <td class="mono col-num" th:text="'₹' + ${#numbers.formatDecimal(p.unitPrice, 1, 'COMMA', 2, 'POINT')}">₹120.00</td>
+                                <td class="mono" th:text="${p.uom}">KG</td>
+                                <td>
+                                    <a th:href="@{'/products?editId=' + ${p.id}}" class="btn btn-secondary btn-sm">Edit</a>
+                                    <form th:action="@{'/products/' + ${p.id} + '/delete'}" method="post" style="display:inline;" onsubmit="return confirm('Delete this product?');">
+                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
